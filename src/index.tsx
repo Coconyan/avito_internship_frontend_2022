@@ -1,15 +1,27 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import './index.css';
-import App from './App';
+import App from './components/app/App';
+// todo delete web vitals?
 import reportWebVitals from './reportWebVitals';
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+import { fetchNewsAction } from './store/api-actions';
+import { store } from './store';
+import { Provider } from 'react-redux';
+
+store.dispatch(fetchNewsAction());
 
 const root = ReactDOM.createRoot(
   document.getElementById('root') as HTMLElement
 );
+
 root.render(
   <React.StrictMode>
-    <App />
+    <Provider store={store}>
+      <ToastContainer />
+      <App />
+    </Provider>
   </React.StrictMode>
 );
 
