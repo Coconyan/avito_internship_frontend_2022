@@ -1,6 +1,3 @@
-import React from 'react';
-// import logo from './img/logo.svg';
-// import styles from './App.module.scss';
 import {
   BrowserRouter as Router,
   Switch,
@@ -9,17 +6,15 @@ import {
 } from 'react-router-dom';
 import MainPage from '../../pages/main-page/main-page';
 import ItemPage from '../../pages/item-page/item-page';
+import { Container } from 'semantic-ui-react';
+import NotFoundPage from '../../pages/not-found-page/not-found-page';
 
 function App() {
   return (
     <Router>
-      <div>
+      <Container>
         <nav>
-          <ul>
-            <li>
-              <Link to="/">Home</Link>
-            </li>
-          </ul>
+          <Link to="/">Home</Link>
         </nav>
         <Switch>
           <Route exact path="/">
@@ -28,8 +23,11 @@ function App() {
           <Route path="/items/:id">
             <ItemPage />
           </Route>
+          <Route path="*">
+            <NotFoundPage />
+          </Route>
         </Switch>
-      </div>
+      </Container>
     </Router>
   );
 }

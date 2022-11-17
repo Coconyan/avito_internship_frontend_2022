@@ -1,12 +1,12 @@
+import { Container } from "semantic-ui-react";
 import NewsList from "../../components/news-list/news-list";
 
 function MainPage(): JSX.Element {
   return (
-    <div>
+    <Container>
       <h1>HACKER NEWS</h1>
-
       <NewsList />
-    </div>
+    </Container>
   );
 }
 

@@ -8,6 +8,7 @@ const initialState: Data = {
   news: null,
   currentNews: null,
   currentNewsLoading: false,
+  newsLoading: false,
 };
 
 export const data = createSlice({
@@ -22,8 +23,11 @@ export const data = createSlice({
     },
     setCurrentNewsLoading: (state, action) => {
       state.currentNewsLoading = action.payload;
-    }
+    },
+    setNewsLoading: (state, action) => {
+      state.newsLoading = action.payload;
+    },
   },
 });
 
-export const { loadNews, loadCurrentNews, setCurrentNewsLoading } = data.actions;
+export const { loadNews, loadCurrentNews, setCurrentNewsLoading, setNewsLoading } = data.actions;

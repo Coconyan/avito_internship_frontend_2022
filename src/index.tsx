@@ -1,14 +1,14 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
-import './index.css';
-import App from './components/app/App';
 // todo delete web vitals?
 import reportWebVitals from './reportWebVitals';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import 'semantic-ui-css/semantic.min.css'
 import { fetchNewsAction } from './store/api-actions';
 import { store } from './store';
 import { Provider } from 'react-redux';
+import App from './components/app/App';
 
 store.dispatch(fetchNewsAction());
 

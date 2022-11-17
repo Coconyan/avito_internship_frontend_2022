@@ -10,5 +10,4 @@ export type NewsItem = {
   url: string,
 };
 
-export type News = NewsItem[];
-
+export type News = [number];

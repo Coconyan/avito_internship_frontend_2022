@@ -1,16 +1,22 @@
 import { createAsyncThunk } from '@reduxjs/toolkit';
 import { AxiosInstance } from 'axios';
-import { APIRoute, AppRoute } from '../const';
+import { toast } from 'react-toastify';
+import {
+  APIRoute,
+  MAX_NEWS
+} from '../const';
 import { errorHandle } from '../services/error-handle';
 import { NewsItem } from '../types/news';
 import {
   AppDispatch,
   State
 } from '../types/state';
-import { redirectToRoute } from './actions';
-import { loadCurrentNews, loadNews, setCurrentNewsLoading } from './data/data';
-// import { redirectToRoute } from './actions';
-// import { loadOffers } from './data/data';
+import {
+  loadCurrentNews,
+  loadNews,
+  setCurrentNewsLoading,
+  setNewsLoading
+} from './data/data';
 
 export const fetchNewsAction = createAsyncThunk<void, undefined, {
   dispatch: AppDispatch,
@@ -20,8 +26,10 @@ export const fetchNewsAction = createAsyncThunk<void, undefined, {
   'data/fetchNews',
   async (_arg, { dispatch, extra: api }) => {
     try {
+      dispatch(setNewsLoading(true));
       const { data } = await api.get<[number]>(`${APIRoute.News}newstories.json`);
-      dispatch(loadNews(data.slice(0, 100))) // Limit 100 news
+      dispatch(loadNews(data.slice(0, MAX_NEWS))) // Limit news
+      dispatch(setNewsLoading(false));
     } catch (error) {
       errorHandle(error);
     }
@@ -39,57 +47,14 @@ export const fetchCurrentNews = createAsyncThunk<void, number, {
       dispatch(setCurrentNewsLoading(true));
       const { data } = await api.get<NewsItem>(`${APIRoute.NewsItem}/${id}.json`);
       dispatch(loadCurrentNews(data));
-      // console.log(data);
-      // const {data: dataNearby} = await api.get<Offers>(`${APIRoute.Offers}/${id}/nearby`);
-      // dispatch(loadCurrentOffersNearby(dataNearby));
-      // const {data: dataComments} = await api.get<Comment[]>(`${APIRoute.Comments}/${id}`);
-      // dispatch(loadCurrentOfferComments(dataComments));
       dispatch(setCurrentNewsLoading(false));
+
+      // If we go to the address "/item/id" with a non-existent id, we get a response of 200 and null from the server
+      if (data === null) {
+        toast.error('No data!')
+      }
     } catch (error) {
       errorHandle(error);
-      dispatch(redirectToRoute(AppRoute.NotFound));
     }
   },
 );
-
-// const fetchCurrentNewsItem = async (id: number) => {
-//     try {
-//       // dispatch(setCurrentNewsLoading(true));
-//       const { data } = await api.get<NewsItem>(`${APIRoute.NewsItem}/${id}.json`);
-//       console.log(data);
-//       // const {data: dataNearby} = await api.get<Offers>(`${APIRoute.Offers}/${id}/nearby`);
-//       // dispatch(loadCurrentOffersNearby(dataNearby));
-//       // const {data: dataComments} = await api.get<Comment[]>(`${APIRoute.Comments}/${id}`);
-//       // dispatch(loadCurrentOfferComments(dataComments));
-//       // dispatch(setCurrentNewsLoading(false));
-//     } catch (error) {
-//       errorHandle(error);
-//       // dispatch(redirectToRoute(AppRoute.NotFound));
-//     }
-//   },
-// };
-
-
-// export const fetchCurrentNewsItem = createAsyncThunk<void, number, {
-//   dispatch: AppDispatch,
-//   state: State,
-//   extra: AxiosInstance
-// }>(
-//   'data/fetchCurrentNewsItem',
-//   async (id: number, {dispatch, extra: api}) => {
-//     try {
-//       // dispatch(setCurrentNewsLoading(true));
-//       const {data} = await api.get<any>(`${APIRoute.NewsItem}/${id}.json`);
-//       return data;
-//       // const {data: dataNearby} = await api.get<Offers>(`${APIRoute.Offers}/${id}/nearby`);
-//       // dispatch(loadCurrentOffersNearby(dataNearby));
-//       // const {data: dataComments} = await api.get<Comment[]>(`${APIRoute.Comments}/${id}`);
-//       // dispatch(loadCurrentOfferComments(dataComments));
-//       // dispatch(setCurrentNewsLoading(false));
-//     } catch (error) {
-//       errorHandle(error);
-//       dispatch(redirectToRoute(AppRoute.NotFound));
-//     }
-//   },
-// );
-

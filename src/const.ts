@@ -1,3 +1,6 @@
+export const MAIN_PAGE_UPDATE_INTERVAL = 60000;
+export const MAX_NEWS = 100;
+
 export enum NameSpace {
   data = 'DATA',
 }
@@ -16,8 +19,5 @@ export enum AppRoute {
 // TODO
 export enum APIRoute {
   News = '/',
-  NewsItem = '/item',
-  Comments = '/comments'
+  NewsItem = '/item'
 }
-
-export const mainPageUpdateInterval = 60000;
