@@ -4,11 +4,11 @@ import {
 } from "react";
 import ContentLoader from "react-content-loader";
 import { Item } from "semantic-ui-react";
-import { APIRoute } from "../../const";
-import { errorHandle } from "../../services/error-handle";
-import { api } from "../../store";
 import { NewsItem } from "../../types/news";
-import { convertUnixTimeToDate } from "../../utils";
+import {
+  convertUnixTimeToDate,
+  fetchCurrentNewsItem
+} from "../../utils";
 
 type PropsType = {
   newsItem: number;
@@ -18,18 +18,8 @@ function NewsListItem({ newsItem }: PropsType): JSX.Element {
   const [item, setItem] = useState<NewsItem | null>(null);
 
   useEffect(() => {
-    fetchCurrentNewsItem(Number(newsItem));
-  }, []);
-
-  const fetchCurrentNewsItem = async (id: number) => {
-    try {
-      const { data } = await api.get<NewsItem>(`${APIRoute.NewsItem}/${id}.json`);
-      // console.log('fetch item');
-      setItem(data);
-    } catch (error) {
-      errorHandle(error);
-    }
-  };
+    fetchCurrentNewsItem(Number(newsItem), setItem);
+  }, [item]);
 
   if (!item) {
     return (

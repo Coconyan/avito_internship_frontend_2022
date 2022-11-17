@@ -3,17 +3,16 @@ import {
   useEffect
 } from "react";
 import ContentLoader from "react-content-loader";
-import { APIRoute } from "../../const";
-import { errorHandle } from "../../services/error-handle";
-import { api } from "../../store";
-import { convertUnixTimeToDate } from "../../utils";
+import {
+  convertUnixTimeToDate,
+  fetchCurrentNewsItem
+} from "../../utils";
 import CommentsList from "../comments-list/comments-list";
 import {
   Button,
   Comment
 } from 'semantic-ui-react';
 import { CommentType } from "../../types/comment";
-
 
 type PropsType = {
   comment: number;
@@ -24,18 +23,8 @@ function CommentItem({ comment }: PropsType): JSX.Element {
   const [openKids, setOpenKids] = useState(false);
 
   useEffect(() => {
-    fetchCurrentNewsItem(Number(comment));
+    fetchCurrentNewsItem(Number(comment), setItem);
   }, []);
-
-  const fetchCurrentNewsItem = async (id: number) => {
-    try {
-      const { data } = await api.get<CommentType>(`${APIRoute.NewsItem}/${id}.json`);
-      setItem(data);
-      console.log(data);
-    } catch (error) {
-      errorHandle(error);
-    }
-  };
 
   if (!item) {
     return (

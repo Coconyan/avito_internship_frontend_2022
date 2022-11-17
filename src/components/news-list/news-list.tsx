@@ -1,14 +1,9 @@
-import {
-  useEffect,
-  useState
-} from "react";
 import { Link } from "react-router-dom";
 import {
   Button,
   Item,
   List
 } from "semantic-ui-react";
-import { MAIN_PAGE_UPDATE_INTERVAL } from "../../const";
 import { useAppSelector } from "../../hooks";
 import { store } from "../../store";
 import { fetchNewsAction } from "../../store/api-actions";
@@ -18,20 +13,9 @@ import {
 } from "../../store/data/selectors";
 import NewsListItem from "../news-list-item/news-list-item";
 
-function NewsList(): JSX.Element {
+function NewsList({intervalState, setIntervalState}: any): JSX.Element {
   const news = useAppSelector(getNews);
   const isLoading = useAppSelector(getNewsLoading);
-  const [intervalState, setIntervalState] = useState(0);
-  // todo naming variables
-
-  useEffect(() => {
-    const interval = setInterval(() => {
-      store.dispatch(fetchNewsAction());
-      // console.log(Date.now());
-    }, MAIN_PAGE_UPDATE_INTERVAL);
-
-    return () => clearInterval(interval);
-  }, [intervalState])
 
   return (
     <List>
@@ -45,7 +29,7 @@ function NewsList(): JSX.Element {
       >
         Reload
       </Button>
-      {news && news.slice(0, 100).map((item) => (
+      {news && news.map((item) => (
         <List.Item key={item}>
           <Link to={`/items/${item}`} >
             <Item.Group>

@@ -1,7 +1,7 @@
 import axios, { AxiosInstance } from 'axios';
 
 const BASE_URL = 'https://hacker-news.firebaseio.com/v0/';
-const TIMEOUT = 5000;
+const TIMEOUT = 500;
 
 export const createAPI = (): AxiosInstance => {
   const api = axios.create({

@@ -11,14 +11,17 @@ import {
   useAppSelector
 } from '../../hooks';
 import { fetchCurrentNews } from '../../store/api-actions';
+import { getComments } from '../../store/comments/selectors';
 import {
   getCurrentNews,
   getCurrentNewsLoading
 } from '../../store/data/selectors';
+import { fetchCurrentNewsItem } from '../../utils';
 
 function ItemPage(): JSX.Element {
   const newsItem = useAppSelector(getCurrentNews);
   const isLoading = useAppSelector(getCurrentNewsLoading);
+  const visibleComments = useAppSelector(getComments);
   const dispatch = useAppDispatch();
   const { id } = useParams<{ id: string }>();
 
@@ -28,8 +31,14 @@ function ItemPage(): JSX.Element {
     }
   }, [id]);
 
+  const updateCommentsHandler = () => {
+    visibleComments?.forEach(comment => {
+      fetchCurrentNewsItem(comment)
+    });
+  }
+
   // if data loading show skeleton
-  if (!newsItem || isLoading) {
+  if (!newsItem || isLoading || newsItem.id !== Number(id)) {
     return (
       <Container>
         <ContentLoader
@@ -62,11 +71,18 @@ function ItemPage(): JSX.Element {
       <p>Time: {date.toLocaleString()}</p>
       <p>Comments Count: {descendants}</p>
       <a href={url}>{url}</a>
-      <Button
-        onClick={() => {dispatch(fetchCurrentNews(Number(id)))}}
+      {/* {visibleComments && <Button
+        onClick={() => updateCommentsHandler(visibleComments)}
       >
-        Update data
-      </Button>
+        Update visible comments
+      </Button>} */}
+      {<Button
+        onClick={() => {
+          dispatch(fetchCurrentNews(newsItem.id));
+          updateCommentsHandler()}}
+      >
+        Update all
+      </Button>}
 
       {kids && <CommentsList comments={kids} />}
     </Container>

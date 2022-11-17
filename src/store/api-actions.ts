@@ -27,7 +27,7 @@ export const fetchNewsAction = createAsyncThunk<void, undefined, {
   async (_arg, { dispatch, extra: api }) => {
     try {
       dispatch(setNewsLoading(true));
-      const { data } = await api.get<[number]>(`${APIRoute.News}newstories.json`);
+      const { data } = await api.get<number[]>(`${APIRoute.News}newstories.json`);
       dispatch(loadNews(data.slice(0, MAX_NEWS))) // Limit news
       dispatch(setNewsLoading(false));
     } catch (error) {
@@ -44,10 +44,10 @@ export const fetchCurrentNews = createAsyncThunk<void, number, {
   'data/fetchCurrentNews',
   async (id: number, { dispatch, extra: api }) => {
     try {
-      dispatch(setCurrentNewsLoading(true));
+      // dispatch(setCurrentNewsLoading(true));
       const { data } = await api.get<NewsItem>(`${APIRoute.NewsItem}/${id}.json`);
       dispatch(loadCurrentNews(data));
-      dispatch(setCurrentNewsLoading(false));
+      // dispatch(setCurrentNewsLoading(false));
 
       // If we go to the address "/item/id" with a non-existent id, we get a response of 200 and null from the server
       if (data === null) {
