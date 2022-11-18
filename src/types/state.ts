@@ -6,13 +6,15 @@ import {
 
 export type Data = {
   news: News | null;
+  newsItems: NewsItem[] | null;
+  unloadedNewsItems: NewsItem[];
   currentNews: NewsItem | null;
-  currentNewsLoading: boolean;
   newsLoading: boolean;
 };
 
 export type Comments = {
-  comments: number[] | null;
+  commentsList: number[];
+  commentsLoading: boolean;
 }
 
 export type State = ReturnType<typeof store.getState>;

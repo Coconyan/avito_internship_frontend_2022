@@ -17,8 +17,7 @@ export enum AppRoute {
   NotFound = '*'
 }
 
-// TODO
 export enum APIRoute {
   News = '/',
-  NewsItem = '/item'
+  Item = '/item'
 }

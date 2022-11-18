@@ -5,5 +5,6 @@ export type CommentType = {
   parent: number,
   text: string,
   time: number,
-  type: string
+  type: string,
+  deleted?: boolean
 }

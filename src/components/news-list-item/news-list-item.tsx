@@ -1,27 +1,18 @@
-import {
-  useEffect,
-  useState
-} from "react";
 import ContentLoader from "react-content-loader";
 import { Item } from "semantic-ui-react";
+import { useAppSelector } from "../../hooks";
+import { getUnloadedNewsItems } from "../../store/data/selectors";
 import { NewsItem } from "../../types/news";
-import {
-  convertUnixTimeToDate,
-  fetchCurrentNewsItem
-} from "../../utils";
+import { convertUnixTimeToDate } from "../../utils";
 
 type PropsType = {
-  newsItem: number;
+  newsItem: NewsItem;
 };
 
 function NewsListItem({ newsItem }: PropsType): JSX.Element {
-  const [item, setItem] = useState<NewsItem | null>(null);
+  const unloadedNewsItems = useAppSelector(getUnloadedNewsItems);
 
-  useEffect(() => {
-    fetchCurrentNewsItem(Number(newsItem), setItem);
-  }, [item]);
-
-  if (!item) {
+  if (unloadedNewsItems.length > 0) {
     return (
       <ContentLoader
         speed={2}
@@ -40,7 +31,7 @@ function NewsListItem({ newsItem }: PropsType): JSX.Element {
     );
   }
 
-  const { by, title, time, score } = item;
+  const { by, title, time, score } = newsItem;
 
   return (
     <Item>

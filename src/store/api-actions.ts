@@ -14,8 +14,9 @@ import {
 import {
   loadCurrentNews,
   loadNews,
-  setCurrentNewsLoading,
-  setNewsLoading
+  loadNewsItems,
+  setNewsLoading,
+  setUnloadedNewsItems
 } from './data/data';
 
 export const fetchNewsAction = createAsyncThunk<void, undefined, {
@@ -28,8 +29,45 @@ export const fetchNewsAction = createAsyncThunk<void, undefined, {
     try {
       dispatch(setNewsLoading(true));
       const { data } = await api.get<number[]>(`${APIRoute.News}newstories.json`);
-      dispatch(loadNews(data.slice(0, MAX_NEWS))) // Limit news
+      dispatch(loadNews(data.slice(0, MAX_NEWS))); // Limit news MAX_NEWS
+
+      dispatch(fetchNewsItemsAction(data.slice(0, MAX_NEWS)));
       dispatch(setNewsLoading(false));
+    } catch (error) {
+      errorHandle(error);
+    }
+  },
+);
+
+export const fetchNewsItemsAction = createAsyncThunk<void, number[], {
+  dispatch: AppDispatch,
+  state: State,
+  extra: AxiosInstance
+}>(
+  'data/fetchNewsItems',
+  async (news: number[], { dispatch, getState, extra: api }) => {
+    try {
+      const newsItems = getState().DATA.newsItems;
+      let unloadedNewsItems: number[] = [];
+      if (newsItems !== null) {
+        unloadedNewsItems = news.filter((item) => {
+          for (const news of newsItems) {
+            if (item === news.id) {
+              return false
+            }
+          } return true
+        });
+      } else {
+        unloadedNewsItems = news;
+      }
+      dispatch(setUnloadedNewsItems(unloadedNewsItems));
+
+      const data = await Promise.all(unloadedNewsItems.map((item) => 
+        api.get<NewsItem>(`${APIRoute.Item}/${item}.json`)
+      ));
+      let newData = data.map((item) => item.data);
+      dispatch(loadNewsItems(newData));
+      dispatch(setUnloadedNewsItems([]));
     } catch (error) {
       errorHandle(error);
     }
@@ -44,10 +82,8 @@ export const fetchCurrentNews = createAsyncThunk<void, number, {
   'data/fetchCurrentNews',
   async (id: number, { dispatch, extra: api }) => {
     try {
-      // dispatch(setCurrentNewsLoading(true));
-      const { data } = await api.get<NewsItem>(`${APIRoute.NewsItem}/${id}.json`);
+      const { data } = await api.get<NewsItem>(`${APIRoute.Item}/${id}.json`);
       dispatch(loadCurrentNews(data));
-      // dispatch(setCurrentNewsLoading(false));
 
       // If we go to the address "/item/id" with a non-existent id, we get a response of 200 and null from the server
       if (data === null) {

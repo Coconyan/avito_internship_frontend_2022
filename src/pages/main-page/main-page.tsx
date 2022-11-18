@@ -1,16 +1,27 @@
-import { useState, useEffect } from "react";
-import { Container } from "semantic-ui-react";
+import {
+  useState,
+  useEffect
+} from "react";
+import {
+  Button,
+  Container
+} from "semantic-ui-react";
 import NewsList from "../../components/news-list/news-list";
 import { MAIN_PAGE_UPDATE_INTERVAL } from "../../const";
+import { useAppSelector } from "../../hooks";
 import { store } from "../../store";
 import { fetchNewsAction } from "../../store/api-actions";
+import {
+  getNewsItems,
+  getNewsLoading
+} from "../../store/data/selectors";
 
 function MainPage(): JSX.Element {
+  const isLoading = useAppSelector(getNewsLoading);
   const [intervalState, setIntervalState] = useState(0);
-  // todo naming variables
+  const newsItems = useAppSelector(getNewsItems);
 
   useEffect(() => {
-    // store.dispatch(fetchNewsAction());
     const interval = setInterval(() => {
       store.dispatch(fetchNewsAction());
     }, MAIN_PAGE_UPDATE_INTERVAL);
@@ -21,11 +32,22 @@ function MainPage(): JSX.Element {
   return (
     <Container>
       <h1>HACKER NEWS</h1>
-      <NewsList intervalState={intervalState} setIntervalState={setIntervalState} />
+      <Container textAlign='right' >
+        <Button
+          basic
+          loading={isLoading}
+          disabled={isLoading}
+          onClick={() => {
+            store.dispatch(fetchNewsAction());
+            setIntervalState(intervalState + 1);
+          }}
+        >
+          Reload
+        </Button>
+      </Container>
+      <NewsList newsItems={newsItems} />
     </Container>
   );
 }
-
-// TODO Добавить в store массив всех новостей, сравнивать их id с массивом id
 
 export default MainPage;

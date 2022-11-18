@@ -1,4 +1,5 @@
 import { NameSpace } from "../../const";
 import { State } from "../../types/state";
 
-export const getComments = (state: State): number[] | null => state[NameSpace.comments].comments;
+export const getCommentsList = (state: State): number[] => state[NameSpace.comments].commentsList;
+export const getCommentsLoading = (state: State): boolean => state[NameSpace.comments].commentsLoading;

@@ -3,32 +3,24 @@ import {
   Comment,
   Header
 } from 'semantic-ui-react';
-import { useAppSelector, useAppDispatch } from '../../hooks';
-import { setComments } from '../../store/comments/comments';
-import { getComments } from '../../store/comments/selectors';
-import { data } from '../../store/data/data';
+import {
+  useAppSelector,
+  useAppDispatch
+} from '../../hooks';
+import { setCommentsList } from '../../store/comments/comments';
+import { getCommentsList } from '../../store/comments/selectors';
 
 type PropsType = {
   comments: number[] | undefined;
   noHeader?: boolean;
-  openKids?: boolean;
+  updateState: number;
 };
 
-function CommentsList({ comments, noHeader = false, openKids = false }: PropsType): JSX.Element {
-  const visibleComments = useAppSelector(getComments);
+function CommentsList({ comments, noHeader = false, updateState }: PropsType): JSX.Element {
+  const visibleComments = useAppSelector(getCommentsList);
   const dispatch = useAppDispatch();
 
-  !visibleComments && dispatch(setComments(comments));
-
-  if (comments && visibleComments) {
-    comments.forEach(comment => {
-      if (!visibleComments.includes(comment)) {
-        let visibileCommentsWithNew = visibleComments.slice();
-        visibileCommentsWithNew.push(comment);
-        dispatch(setComments(visibileCommentsWithNew));
-      }
-    });
-  }
+  !visibleComments && dispatch(setCommentsList(comments));
 
   return (
     <Comment.Group>
@@ -39,7 +31,7 @@ function CommentsList({ comments, noHeader = false, openKids = false }: PropsTyp
       )
       }
       {comments && comments.map((comment) => (
-        <CommentItem key={comment} comment={comment} />
+        <CommentItem key={comment} comment={comment} updateState={updateState}/>
       ))}
     </Comment.Group>
   );

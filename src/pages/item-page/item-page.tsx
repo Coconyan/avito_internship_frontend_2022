@@ -1,4 +1,7 @@
-import { useEffect } from 'react';
+import {
+  useEffect,
+  useState
+} from 'react';
 import ContentLoader from 'react-content-loader';
 import { useParams } from 'react-router-dom';
 import {
@@ -11,34 +14,23 @@ import {
   useAppSelector
 } from '../../hooks';
 import { fetchCurrentNews } from '../../store/api-actions';
-import { getComments } from '../../store/comments/selectors';
-import {
-  getCurrentNews,
-  getCurrentNewsLoading
-} from '../../store/data/selectors';
-import { fetchCurrentNewsItem } from '../../utils';
+import { getCommentsLoading } from '../../store/comments/selectors';
+import { getCurrentNews } from '../../store/data/selectors';
 
 function ItemPage(): JSX.Element {
   const newsItem = useAppSelector(getCurrentNews);
-  const isLoading = useAppSelector(getCurrentNewsLoading);
-  const visibleComments = useAppSelector(getComments);
+  const isCommentsLoading = useAppSelector(getCommentsLoading);
   const dispatch = useAppDispatch();
+  const [updateState, setUpdateState] = useState(0);
   const { id } = useParams<{ id: string }>();
 
   useEffect(() => {
     if (newsItem === null || newsItem.id !== Number(id)) {
       dispatch(fetchCurrentNews(Number(id)));
     }
-  }, [id]);
+  }, [dispatch, id, newsItem]);
 
-  const updateCommentsHandler = () => {
-    visibleComments?.forEach(comment => {
-      fetchCurrentNewsItem(comment)
-    });
-  }
-
-  // if data loading show skeleton
-  if (!newsItem || isLoading || newsItem.id !== Number(id)) {
+  if (!newsItem || newsItem.id !== Number(id)) {
     return (
       <Container>
         <ContentLoader
@@ -61,7 +53,6 @@ function ItemPage(): JSX.Element {
 
   const { by, url, title, time, descendants, kids } = newsItem;
   const date = new Date(time * 1000);
-  console.log(newsItem);
 
   return (
     <Container>
@@ -70,21 +61,24 @@ function ItemPage(): JSX.Element {
       <p>Author: {by}</p>
       <p>Time: {date.toLocaleString()}</p>
       <p>Comments Count: {descendants}</p>
-      <a href={url}>{url}</a>
-      {/* {visibleComments && <Button
-        onClick={() => updateCommentsHandler(visibleComments)}
-      >
-        Update visible comments
-      </Button>} */}
-      {<Button
-        onClick={() => {
-          dispatch(fetchCurrentNews(newsItem.id));
-          updateCommentsHandler()}}
-      >
-        Update all
-      </Button>}
+      <p>
+        <a href={url}>{url}</a>
+      </p>
+      <Container textAlign='left' >
+        <Button
+          loading={isCommentsLoading}
+          disabled={isCommentsLoading}
+          onClick={() => {
+            dispatch(fetchCurrentNews(newsItem.id));
+            setUpdateState(updateState + 1);
+          }
+          }
+        >
+          Update comments
+        </Button>
+      </Container>
 
-      {kids && <CommentsList comments={kids} />}
+      {descendants > 0 && <CommentsList comments={kids} updateState={updateState} />}
     </Container>
   );
 

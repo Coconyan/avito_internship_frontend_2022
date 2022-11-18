@@ -5,7 +5,7 @@ import {
 import ContentLoader from "react-content-loader";
 import {
   convertUnixTimeToDate,
-  fetchCurrentNewsItem
+  fetchCommentItem
 } from "../../utils";
 import CommentsList from "../comments-list/comments-list";
 import {
@@ -13,20 +13,24 @@ import {
   Comment
 } from 'semantic-ui-react';
 import { CommentType } from "../../types/comment";
+import { getCommentsList } from "../../store/comments/selectors";
+import { useAppSelector } from "../../hooks";
 
 type PropsType = {
   comment: number;
+  updateState: number;
 };
 
-function CommentItem({ comment }: PropsType): JSX.Element {
-  const [item, setItem] = useState<CommentType | null>(null);
+function CommentItem({ comment, updateState }: PropsType): JSX.Element {
+  const visibleComments = useAppSelector(getCommentsList);
+  const [commentItem, setCommentItem] = useState<CommentType | null>(null);
   const [openKids, setOpenKids] = useState(false);
 
   useEffect(() => {
-    fetchCurrentNewsItem(Number(comment), setItem);
-  }, []);
+    fetchCommentItem(Number(comment), setCommentItem);
+  }, [comment, updateState]);
 
-  if (!item) {
+  if (!commentItem) {
     return (
       <ContentLoader
         speed={2}
@@ -43,7 +47,18 @@ function CommentItem({ comment }: PropsType): JSX.Element {
     );
   }
 
-  const { by, text, time, kids } = item;
+  const { by, text, time, kids, deleted } = commentItem;
+
+  if (deleted) return (<></>);
+
+  const kidsIncludesHandler = () => {
+    kids?.forEach((kid) => {
+      if (visibleComments.includes(kid)) {
+        return false;
+      }
+    })
+    return true;
+  }
 
   return (
     <Comment>
@@ -54,8 +69,8 @@ function CommentItem({ comment }: PropsType): JSX.Element {
         </Comment.Metadata>
         <Comment.Text>{text}</Comment.Text>
       </Comment.Content>
-      {kids && !openKids && <Button onClick={() => { setOpenKids(true) }}>Open comments</Button>}
-      {openKids && <CommentsList comments={kids} noHeader={true} openKids={openKids} />}
+      {kids && kidsIncludesHandler() && !openKids && <Button onClick={() => { setOpenKids(true) }}>Open comments</Button>}
+      {openKids && <CommentsList comments={kids} noHeader={true} updateState={updateState} />}
     </Comment>
   );
 }
