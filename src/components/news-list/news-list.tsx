@@ -10,7 +10,7 @@ type PropsType = {
   newsItems: NewsItem[] | null;
 }
 
-function NewsList({ newsItems }: PropsType): JSX.Element {
+function NewsList({ newsItems }: PropsType): JSX.Element {  
   return (
     <List divided relaxed>
       {newsItems && newsItems.map((item: NewsItem) => (

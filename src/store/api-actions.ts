@@ -32,7 +32,6 @@ export const fetchNewsAction = createAsyncThunk<void, undefined, {
       dispatch(loadNews(data.slice(0, MAX_NEWS))); // Limit news MAX_NEWS
 
       dispatch(fetchNewsItemsAction(data.slice(0, MAX_NEWS)));
-      dispatch(setNewsLoading(false));
     } catch (error) {
       errorHandle(error);
     }
@@ -60,14 +59,24 @@ export const fetchNewsItemsAction = createAsyncThunk<void, number[], {
       } else {
         unloadedNewsItems = news;
       }
-      dispatch(setUnloadedNewsItems(unloadedNewsItems));
+      if (unloadedNewsItems !== null) {
+        dispatch(setUnloadedNewsItems(unloadedNewsItems));
+      }
 
       const data = await Promise.all(unloadedNewsItems.map((item) => 
         api.get<NewsItem>(`${APIRoute.Item}/${item}.json`)
       ));
-      let newData = data.map((item) => item.data);
-      dispatch(loadNewsItems(newData));
-      dispatch(setUnloadedNewsItems([]));
+
+      // if data is null
+      if (data.length !== 0 && data[0].data === null) {
+        dispatch(setUnloadedNewsItems([]));
+        dispatch(setNewsLoading(false));
+      } else {
+        let newData = data.map((item) => item.data);
+        dispatch(loadNewsItems(newData));
+        dispatch(setUnloadedNewsItems([]));
+        dispatch(setNewsLoading(false));
+      }
     } catch (error) {
       errorHandle(error);
     }
