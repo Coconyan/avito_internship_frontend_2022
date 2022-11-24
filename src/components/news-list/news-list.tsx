@@ -3,6 +3,7 @@ import {
   Item,
   List
 } from "semantic-ui-react";
+import { AppRoute } from "../../const";
 import { NewsItem } from "../../types/news";
 import NewsListItem from "../news-list-item/news-list-item";
 
@@ -15,7 +16,7 @@ function NewsList({ newsItems }: PropsType): JSX.Element {
     <List divided relaxed>
       {newsItems && newsItems.map((item: NewsItem) => (
         <List.Item key={item.id}>
-          <Link to={`/items/${item.id}`} >
+          <Link to={`${AppRoute.Item}/${item.id}`} data-testid='item-link'>
             <Item.Group>
               <NewsListItem newsItem={item} />
             </Item.Group>

@@ -8,6 +8,7 @@ import MainPage from '../../pages/main-page/main-page';
 import ItemPage from '../../pages/item-page/item-page';
 import { Container } from 'semantic-ui-react';
 import NotFoundPage from '../../pages/not-found-page/not-found-page';
+import { AppRoute } from '../../const';
 
 function App() {
   return (
@@ -20,7 +21,7 @@ function App() {
           <Route exact path="/">
             <MainPage />
           </Route>
-          <Route path="/items/:id">
+          <Route path={`${AppRoute.Item}/:id`}>
             <ItemPage />
           </Route>
           <Route path="*">

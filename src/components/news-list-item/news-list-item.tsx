@@ -36,7 +36,7 @@ function NewsListItem({ newsItem }: PropsType): JSX.Element {
   return (
     <Item>
       <Item.Content>
-        <Item.Header as='a'>{title}</Item.Header>
+        <Item.Header>{title}</Item.Header>
         <Item.Meta>Author: {by}</Item.Meta>
         <Item.Description>
           Score: {score}
